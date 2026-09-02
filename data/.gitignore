@@ -1,0 +1,42 @@
+# DATA repo — campaigns, tenants, libraries, system backlog.
+# Operators read and write here; Claude Code drives the git, they never type a command.
+
+# Secrets never enter the repo (team-deployment.md §9.2)
+.env
+.env.*
+credentials.md
+**/credentials.md
+
+# Per-machine, never shared (§9.1)
+.claude/local/
+.claude/state/dirty-campaigns.json
+.claude/state/hook-latency.json
+.claude/state/license-accepted.json
+
+# Derived surfaces are a CACHE, not information (§10). Under `profile: team` every operator
+# renders locally, so committing them only creates a race for the same write target — the
+# single largest source of merge conflicts, for files that are a pure function of md + yaml.
+*.html
+
+# OS / Python noise
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/
+*.pyc
+
+# WORKING FILES, never deliverables. Measured on the master 2026-09-02: campaigns/ was
+# 6.4 GB, and 90% of it was raw screen captures plus _tmp/ intermediates. The finished
+# assets came to 673 MB. Nothing said "do not track these", so they were tracked, and once
+# they are in history only a rewrite removes them. These rules are what keeps a new
+# deployment at hundreds of megabytes instead of gigabytes.
+# Anything a Producer actually SHIPS lives in finals/ or youtube-upload/ and is tracked.
+**/_tmp/
+**/*Recording*.mp4
+**/*Recording*.mov
+**/placeholder-screenshots/
+**/gallery-thumbs/
+node_modules/
+.remotion/
+dist/
+build/

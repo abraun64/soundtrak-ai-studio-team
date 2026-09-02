@@ -1,0 +1,10 @@
+# Deployment profile (docs/specs/team-deployment.md §12 · SYS-028).
+# Lives in the DATA repo so every operator in this deployment agrees on the shape.
+profile: team
+
+# Any single axis can be overridden. Known axes:
+#   multi_operator · claim_locks · attribution_required · shared_data_remote
+#   pinned_release_updates · commit_generated_html · publish_to_sharepoint
+#   multi_approver · compliance_gating
+# overrides:
+#   compliance_gating: false
