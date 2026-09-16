@@ -17,7 +17,8 @@ Usage: python build-gallery.py --campaign <slug>
 Optional per-campaign override: campaigns/<slug>/gallery-config.yaml with channel
 summaries customised for the tenant. Falls back to system defaults below.
 
-Dependencies: playwright (sync). Install: pip install playwright && playwright install chromium
+Dependencies: playwright (sync). Install: python -m pip install playwright
+              THEN: python -m playwright install chromium
 """
 from __future__ import annotations
 import argparse
@@ -887,6 +888,30 @@ _NON_COPY_MD_RE = re.compile(
     re.IGNORECASE,
 )
 
+# SYS-152 — the ONE definition of "this field explicitly declares no file". It existed only
+# inside _resolve_copy_file, so the --check path did not know about it: `copy_file: none` (the
+# documented way to say an asset has no separate edit-copy) resolved correctly at build time and
+# then FAILED the check with "missing file none". The only workaround was to delete the field,
+# which is undocumented and throws away the explicit declaration. Two code paths read one
+# contract and disagreed — the same shape as SYS-151 and SYS-143, so this lives in one place now
+# and both callers use it.
+_NO_FILE_SENTINELS = ("none", "—", "-", "n/a", "na")
+
+
+def declares_no_file(value) -> bool:
+    """True when a *_file / view_source field explicitly declares that there is no such file."""
+    return isinstance(value, str) and value.strip().lower() in _NO_FILE_SENTINELS
+
+
+def names_a_missing_file(value, base: Path) -> bool:
+    """True when the field names a real path that is not on disk — the only case worth flagging.
+    A non-string (e.g. `copy_file: true`, a boolean flag meaning "this file IS the copy surface")
+    and an explicit no-file sentinel both answer False."""
+    return (isinstance(value, str) and value.strip() != ""
+            and not declares_no_file(value)
+            and not (base / value).exists())
+
+
 def _resolve_copy_file(copy_file_val: str, asset_dir: Path, campaign_dir: Path,
                        files_block: dict | None = None, plan_row: dict | None = None) -> dict | None:
     """Resolve the operator's copy-review surface for an asset into a gallery-ready dict.
@@ -907,7 +932,7 @@ def _resolve_copy_file(copy_file_val: str, asset_dir: Path, campaign_dir: Path,
 
     # Treat an explicit "none" / placeholder as UNSET so the fallback chain still fires
     # (a copy-review md gets attached whenever real copy exists).
-    if isinstance(copy_file_val, str) and copy_file_val.strip().lower() in ("none", "—", "-"):
+    if declares_no_file(copy_file_val):
         copy_file_val = ""
 
     if not copy_file_val:
@@ -2309,16 +2334,14 @@ def run_check(campaign_dir: Path) -> int:
                                 and Path(rel).suffix.lower() not in _COPY_SYNC_EXEMPT_SUFFIXES):
                             asset_ship_mtime = max(asset_ship_mtime, fp.stat().st_mtime)
                 for key in ("production_file", "view_source", "copy_file"):
-                    v = fmeta.get(key)
-                    # Only STRING values name a file to path-check. A per-file
-                    # `copy_file: true` is a boolean flag ("this file IS the copy
-                    # surface"), not a path — skip it (don't crash on Path / bool).
-                    if isinstance(v, str) and v and not (d / v).exists():
-                        failures.append(f"{d.name}: {rel} {key} -> missing file {v}")
+                    # names_a_missing_file skips non-strings (a per-file `copy_file: true` is a
+                    # boolean flag, "this file IS the copy surface", not a path) AND the explicit
+                    # no-file sentinels the resolver honours — SYS-152.
+                    if names_a_missing_file(fmeta.get(key), d):
+                        failures.append(f"{d.name}: {rel} {key} -> missing file {fmeta.get(key)}")
         for key in ("copy_file", "production_file", "view_source"):
-            v = meta.get(key)
-            if isinstance(v, str) and v and not (d / v).exists():
-                failures.append(f"{d.name}: {key} -> missing file {v}")
+            if names_a_missing_file(meta.get(key), d):
+                failures.append(f"{d.name}: {key} -> missing file {meta.get(key)}")
 
         # SYS-121 — every storyboard surface that reaches the operator must ship a Frame
         # column: one rendered still per beat, beside its text (rule

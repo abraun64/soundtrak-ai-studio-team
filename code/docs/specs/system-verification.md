@@ -1,6 +1,6 @@
 # Verifying a system change — what "done" actually means (SYS-138)
 
-**Status:** **AGREED AND LIVE — 2026-08-22.** Part 1 (this definition) was signed off by the
+**Status:** **AGREED AND LIVE — 2026-09-06.** Part 1 (this definition) was signed off by the
 operator; Part 2 (the runner, the `verified:` field and the close rule) shipped the same day.
 The three decisions are recorded at the bottom.
 
@@ -13,7 +13,7 @@ Two failures, six weeks apart, have the same shape.
 - **2026-08-08 — the onboarding build.** Its "UAT" checked that the expected files existed.
   They did. It had to be upgraded to actually *running* the seed build, the doctor and the
   surface renders before anyone knew whether the thing worked.
-- **2026-08-22 — the freshness gate.** `surface_freshness.py --check` printed *"every surface
+- **2026-09-06 — the freshness gate.** `surface_freshness.py --check` printed *"every surface
   is at least as new as its data"* while seven rendered surfaces sat up to four days behind
   their markdown. The check ran. It passed. It proved nothing, because it was never pointed at
   the surfaces that had gone stale.
@@ -170,7 +170,7 @@ Run them all with `python .claude/skills/system-manager/verify.py --level 3`. To
 
 ---
 
-## Worked example — 2026-08-22, the tickets that produced this doc
+## Worked example — 2026-09-06, the tickets that produced this doc
 
 | Change | Level | Evidence that made it acceptance rather than assertion |
 |---|---|---|
@@ -182,7 +182,7 @@ Run them all with `python .claude/skills/system-manager/verify.py --level 3`. To
 
 ---
 
-## Part 2 — what shipped (2026-08-22)
+## Part 2 — what shipped (2026-09-06)
 
 - **`verify.py`** — the level runner, in the System Manager skill.
   `--criteria` prints the table above plus the L2 checklist · `--level 0 <files>` sanity ·
@@ -196,7 +196,7 @@ Run them all with `python .claude/skills/system-manager/verify.py --level 3`. To
 - **The nudge** — the weekly digest runs `--audit` as a diagnostic. It reports; it never
   escalates to a ticket (a P1 about unverified tickets would be circular, and board noise).
 
-## The three decisions (operator, 2026-08-22)
+## The three decisions (operator, 2026-09-06)
 
 1. **Record the level on the ticket — yes.** A `verified:` field on the backlog item, rendered
    on the dashboard card. *Why:* the board is where the operator decides; a commit message is

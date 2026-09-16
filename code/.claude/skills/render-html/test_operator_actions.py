@@ -58,7 +58,7 @@ def test_no_reentrant_scan() -> None:
     _phase_done, whose one nested scan is legitimate and hits the guard); depth 196 was the
     broken one. On a real campaign the blowup cost minutes: gamma-launch-2026q2's dashboard
     render exceeded the Stop hook's 60s budget, was killed, and the surface silently kept
-    serving stale content (verified 2026-08-22; depth 196 before the fix, 2 after)."""
+    serving stale content (verified 2026-09-06; depth 196 before the fix, 2 after)."""
     depth = {"now": 0, "max": 0}
     inner = oa.scan_campaign
 
@@ -101,11 +101,57 @@ def test_gap_absent_without_phase5() -> None:
               not any(a.get("id") == "phase5-author" for a in oa.scan_campaign(cd)))
 
 
+def test_phase_cost_derives_when_blank() -> None:
+    """SYS-151 — the AI-cost cell was read VERBATIM from campaign.yaml, so the live ledger
+    derivation only fired when someone had typed the literal marker "<!-- PHASE_COST:N -->" into
+    that field. Auto-costing was OPT-IN via a magic string: omit it and the cell rendered a dash,
+    silently, while the ledger held correctly phased entries. Recurring operator complaint. Human
+    time already worked the other way round, so one table had two cells behaving differently."""
+    cell = "~$9.99 · ~1.2M tok"
+    real = oa.ledger_phase_cost
+    oa.ledger_phase_cost = lambda *_a, **_k: cell
+    try:
+        cd = Path("does-not-matter")
+        for label, ph in (
+            ("key absent", {"id": 4}),
+            ("empty string", {"id": 4, "ai_cost": ""}),
+            ("em dash", {"id": 4, "ai_cost": "—"}),
+            ("tbd", {"id": 4, "ai_cost": "TBD"}),
+            ("the old opt-in marker", {"id": 4, "ai_cost": "<!-- PHASE_COST:4 -->"}),
+        ):
+            got = oa._phase_ai_cost_cell(ph, cd)
+            check(f"a blank ai_cost derives from the ledger ({label})", got == cell, f"got {got!r}")
+        check("a deliberate prose value is left alone",
+              oa._phase_ai_cost_cell({"id": 4, "ai_cost": "~$0 · operator-run"}, cd)
+              == "~$0 · operator-run")
+        oa.ledger_phase_cost = lambda *_a, **_k: ""
+        check("a phase with nothing in the ledger still renders a dash",
+              oa._phase_ai_cost_cell({"id": 9}, cd) == "—")
+    finally:
+        oa.ledger_phase_cost = real
+
+
+def test_hand_typed_cost_warns() -> None:
+    """The twin failure mode, and the worse one: ai_cost accepts free text, so authors hand-type
+    figures. acme-workforce-report-2026 carried "~$1.33 - ~222k tok (CD trio, metered
+    2026-06-18)" — frozen at its June value and LOOKING correct, which is worse than a blank.
+    The campaign-manager skill already forbids a typed number; nothing enforced it."""
+    warn = oa._phase_cost_warning({"id": 2,
+                                   "ai_cost": "~$1.33 - ~222k tok (CD trio, metered 2026-06-18)"})
+    check("a hand-typed cost figure warns", bool(warn) and "hand-typed" in warn, f"got {warn!r}")
+    check("the warning names the phase", bool(warn) and "phase 2" in warn, f"got {warn!r}")
+    for label, val in (("a marker", "<!-- PHASE_COST:2 -->"), ("prose", "operator-run"),
+                       ("a blank", ""), ("a dash", "\u2014")):
+        check(f"no warning for {label}", oa._phase_cost_warning({"id": 2, "ai_cost": val}) is None)
+
+
 def main() -> int:
     print("operator_actions regression tests")
     test_no_reentrant_scan()
     test_gap_suppressed_once_rollout_authored()
     test_gap_absent_without_phase5()
+    test_phase_cost_derives_when_blank()
+    test_hand_typed_cost_warns()
     if _FAILED:
         print(f"\nFAILED ({len(_FAILED)}): " + ", ".join(_FAILED))
         return 1

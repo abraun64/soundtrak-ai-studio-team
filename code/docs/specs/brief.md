@@ -1,6 +1,6 @@
 # Brief — Phase 1 Schema (v2)
 
-**Spec version**: v3.3 · 2026-06-12: objective taxonomy REMOVED (operator ruling — constraints must earn their place). The objective is ONE plain-language sentence + ONE primary KPI; CM infers the campaign shape (market-facing vs foundation-shaped) from the grilling and confirms its read in plain words — the operator is never asked to classify against system definitions. Supersedes v3.2's class+menu design same-day. v3.1 · 2026-06-12: foundation campaigns (strategy development) + Audience reframed as targeting (select from the tenant segment map) + fit-maturity challenge. v3 · 2026-06-12 (Phase 2 redesign retro R1/R5): mandatory business-objective taxonomy + KPI-scale sanity gate + tenant playbook §0 cited as fixed input. Previously v2 · 2026-06-03: Tech Setup + Human Roles + Cadence Shape per Rollout Architecture v2 (`docs/specs/rollout-architecture.md` §2).
+**Spec version**: v4 · 2026-09-06: the intake interview is now EXHAUSTIVE by default — the 4–8 minute target is removed (a time budget was capping depth), replaced by a COVERAGE BAR over a named topic bank, an evidence sweep that runs BEFORE the first question, a HOMEWORK mechanic for evidence the operator has to go and collect, and a coverage ledger the operator sees at approval. New section: **What we already know**. Operator ruling 2026-09-06: full grilling on every campaign, no exceptions; homework classified load-bearing (blocks) vs useful (proceeds on a stated assumption). Previously v3.3 · 2026-06-12: objective taxonomy REMOVED (operator ruling — constraints must earn their place). The objective is ONE plain-language sentence + ONE primary KPI; CM infers the campaign shape (market-facing vs foundation-shaped) from the grilling and confirms its read in plain words — the operator is never asked to classify against system definitions. Supersedes v3.2's class+menu design same-day. v3.1 · 2026-06-12: foundation campaigns (strategy development) + Audience reframed as targeting (select from the tenant segment map) + fit-maturity challenge. v3 · 2026-06-12 (Phase 2 redesign retro R1/R5): mandatory business-objective taxonomy + KPI-scale sanity gate + tenant playbook §0 cited as fixed input. Previously v2 · 2026-06-03: Tech Setup + Human Roles + Cadence Shape per Rollout Architecture v2 (`docs/specs/rollout-architecture.md` §2).
 
 The **Brief** is the operator-approved fact set for the campaign. CM authors it in Phase 1 from operator inputs (chat, transcripts, URLs, docs). It's strategic, not operational — what / why / who / how-measured / **what tech stack we ship into / who runs it / how often**. Operational asset-level detail lives in the Phase 3 Plan.
 
@@ -18,12 +18,15 @@ Every Brief uses THESE sections, in THIS order, with THESE names — so any read
 just the author) can navigate any campaign's Brief the same way. Campaign-specific extras go in
 **"Anything else"**, never as new top-level headings.
 
-1. Why this campaign · 2. Business objective · 3. The offer · 4. Audience · 5. Insights that matter ·
-6. How to reach them · 7. Single-minded proposition · 8. Goal & KPI · 9. Brand context ·
-10. Mandatories · 11. Budget · 12. Timeline · 13. Tech setup · 14. Roles · 15. Cadence *(recurring
-campaigns only)* · 16. **Anything else** *(campaign-specific context that doesn't fit above — the
-catch-all so extras don't spawn inconsistent headings)* · 17. **Approval record** *(the audit / gate
-block at the BOTTOM — kept)*.
+1. Why this campaign · 2. **What we already know** *(v4 — the evidence base: prior campaigns and
+their real numbers · competitors · audience research we already hold · channel benchmarks. Sits BEFORE
+the objective because the KPI baseline is derived from it, not invented after it)* · 3. Business
+objective · 4. The offer · 5. Audience · 6. Insights that matter · 7. How to reach them ·
+8. Single-minded proposition · 9. Goal & KPI · 10. Brand context · 11. Mandatories · 12. Budget ·
+13. Timeline · 14. Tech setup · 15. Roles · 16. Cadence *(recurring campaigns only)* ·
+17. **Anything else** *(campaign-specific context that doesn't fit above — the catch-all so extras
+don't spawn inconsistent headings)* · 18. **Approval record** *(the audit / gate block at the
+BOTTOM — kept; carries the interview coverage ledger)*.
 
 **Decisions (2026-07-15):** Objective and Goal & KPI stay SEPARATE; "Open questions" folds into
 "Anything else"; the top is the Campaign DNA header (no metadata paragraph, no clean-room note —
@@ -42,6 +45,29 @@ surfacing (mandatory, alongside the review-ready gate).
 
 ## Why this campaign
 One paragraph. The business reason this exists *now*. Not features — outcomes.
+
+## What we already know
+*(v4. The evidence base, assembled by CM's sweep BEFORE the interview and corrected by the operator
+during it — not a research task the operator is set. Every line is either sourced from disk with a
+link, or attributed to the operator. If a line is a guess, it says so.)*
+
+**Prior campaigns in this channel / area** — what we ran, when, and what it actually did. Link the
+campaign and its results (`campaigns/<slug>/`, its analysis folder, its campaign report). One line
+each on what worked and what didn't, with the reason we believe it.
+
+**Channel benchmark** — the number we have actually achieved here before. This is what the KPI is
+derived FROM; a target that is a multiple of it must say what changed to justify the multiple.
+
+**Competitors / category** — who else is speaking to this audience, what they are running now, what
+is visibly working for them, and what we will NOT copy (feeds tenant playbook §0a). Include the
+**differentiation check**: if our intended claim is what everyone in the category already says, say
+so here rather than discovering it at concept stage.
+
+**Audience research we already hold** — surveys, interviews, analytics, CRM segments, win/loss,
+recurring themes from sales calls. Name it, link it, and say what it is good for. What we believe
+about this audience but have never tested goes here too, marked as belief.
+
+**Gaps** — what we wanted and don't have, each carrying its homework state (below).
 
 ## Business objective (declared FIRST, before any other field)
 - **Primary objective**: ONE plain-language sentence — the single business outcome this campaign exists to produce, in the operator's own words (e.g. "book 5 qualified discovery calls", "establish our value proposition and positioning", "launch The Signal to the warm list"). No taxonomy, no menu, no jargon.
@@ -255,19 +281,173 @@ Use these tags inline at section level or paragraph level. Briefs without attrib
 
 ---
 
-## Interview discipline (grill-me pattern)
+## Interview discipline (grill-me pattern) — v4
 
-CM extracts the Brief via a **per-field structured interview**, not a single batch questionnaire. Rules:
+The Brief is the highest-leverage artifact in the system: everything downstream inherits its errors,
+and a vague Brief is the usual reason a concept trio comes back generic. So the intake is an
+**exhaustive interview**, run in full on **every campaign — no exceptions** (operator ruling
+2026-09-06). What varies is how much the operator has to say, not how much gets covered.
 
-- **The business-objective question comes FIRST** — before any other field, in plain English: "What is this campaign for — the single business outcome — and what one number will tell us it worked?" CM then states its inferred campaign shape (market-facing vs foundation-shaped) as a plain-words confirm — never a classification question the operator must answer. Everything downstream inherits this anchor.
-- **One field at a time.** State the current read → probe → recommend → confirm → move on.
-- **Maximum 2 questions per turn.** Never send a list of 8+ questions.
-- **Pre-fill unambiguous fields** from pasted inputs; don't ask about things already known.
-- **Full interview target: 4–8 minutes** of operator time for the strategic core (Why / Offer / Audience / Proposition / KPI / Mandatories / Budget / Timeline).
-- **v2 sections — separate interview pass at end of Phase 1 OR during Phase 3**: tech_stack + human_roles + cadence_shape can be a single grouped pass (~3-5 min). Many fields will be operator-known from prior tenant context; CM pre-fills from `tenant/<name>/brand-context.md` defaults where present.
-- **Attribution is live**: every confirmed field gets tagged `[the operator's read]`, `[AI extension]`, or `[AI synthesis]` at capture, not retroactively.
-- **Dependency pass**: after all fields have a first pass, surface logical tensions (budget vs. tier, timeline vs. KPI, **tech_stack vs. asset list**) and resolve before drafting.
-- **Fast-path override**: operator can say "fast-path" or "batch" to revert to single proactive ask.
+### The rule that changed, and the one that didn't
+
+- **REMOVED: the 4–8 minute target.** It was a time budget wearing the clothes of a service
+  standard, and it was the reason the interview stopped early. There is no time target.
+- **KEPT: maximum 2 questions per turn.** That is *pacing*, not depth. Fifteen questions in one
+  message returns fifteen shallow answers. Exhaustive means many turns, not long ones.
+- **The interview ends on a COVERAGE BAR, not a clock**: every topic in the bank below is
+  `answered`, `assumed` (with the assumption written down), `homework` (with an owner and a stated
+  default), `inherited` (already settled at the tenant layer, with a pointer), or `n/a` (with the
+  reason). No topic may be silently absent — the ledger is what makes "exhaustive" checkable rather
+  than a feeling.
+- **Fast-path is now a PACING override only.** "fast-path" / "batch" lets the operator answer in
+  bulk instead of turn-by-turn. It does **not** reduce coverage — every topic still lands in the
+  ledger.
+
+### Step 0 — sweep the evidence BEFORE the first question
+
+Do not open cold. Assemble **What we already know** first, from what the system already holds:
+
+- prior campaigns for this tenant — `campaigns/*/campaign.yaml` (objective + KPI blocks), any
+  `analysis/` folder, any campaign report;
+- the tenant playbook §0 (value prop · claim map · only-we lines) and **§0a disqualifiers**;
+- `tenant-brand/<tenant>-audience-truths.md`, `tenant-brand/<tenant>-market.md`, the research
+  library, the best-practice library.
+
+Then **open with the read, not a question**: *"Here is what I already know about this audience and
+what your last campaigns in this channel actually did — correct me where I'm wrong."* Grilling
+someone on facts the system could have looked up is what turns an interview into an interrogation,
+and it produces worse answers than reacting to something concrete.
+
+### What earns a question
+
+**Grill on evidence; recommend on decisions.** If AI can look it up, research it, or reasonably
+assume it, it is not a question — it is a stated read the operator confirms or corrects. Only things
+that live solely in the marketer's head get asked. This is what lets the interview be exhaustive
+without being an interrogation, and it is the standing rule that CM does not push operational labour
+onto the operator.
+
+**Never re-ask the tenant layer.** Anything settled in Brand Context or playbook §0/§0a is a FIXED
+INPUT: confirm it in one line, never re-interview it. If an answer *changes* a tenant-level fact, it
+graduates UP to the playbook — it does not get buried in a campaign Brief. Exhaustive grilling that
+duplicates the tenant layer into every campaign is exactly what the three-layer model exists to
+prevent.
+
+### The topic bank
+
+Every topic gets a status in the ledger. Ids are stable so the ledger can reference them.
+
+| # | Topic | The point of it |
+|---|---|---|
+| **A — Objective & outcome** | | |
+| A1 | The business outcome, one sentence | The anchor everything inherits |
+| A2 | The one number that says it worked, + deadline | One primary KPI, never two masters |
+| A3 | **Baseline — what we actually achieved here before** | The KPI is derived, not invented |
+| A4 | If the target is a multiple of the baseline, what changed to justify it | See "KPI baseline check" below |
+| A5 | Secondary measures, explicitly labelled secondary | Stops a second master creeping in |
+| A6 | What decision does hitting or missing this drive | A KPI nobody acts on is a vanity metric |
+| **B — What we already know** | | |
+| B1 | Prior campaigns in this channel / area | Mostly pre-filled by the sweep |
+| B2 | Their actual results — the data, not the recollection. Where does it live? | Prime homework candidate |
+| B3 | What worked, and why we believe that | Separates causation from coincidence |
+| B4 | What failed, and why | The more useful half, and the half people skip |
+| B5 | Anything we tried that we would never repeat | Cheap, and it prevents a repeat |
+| **C — Competitors & category** | | |
+| C1 | Who else is speaking to this audience | |
+| C2 | What they are running in this channel now | |
+| C3 | What is visibly working for them | |
+| C4 | What we will NOT copy / off-limits framings | Feeds playbook §0a |
+| C5 | **Differentiation check** — is our intended claim what everyone already says? | Better found now than at concept stage |
+| **D — Audience & research** | | |
+| D1 | Which segment, selected from the tenant map | Select, never re-derive |
+| D2 | Research already done — surveys, interviews, analytics, CRM, win/loss, sales-call themes | |
+| D3 | Where it lives, and can we have it | Prime homework candidate |
+| D4 | What we believe about them that we have never tested | Marked as belief, not fact |
+| D5 | Who is explicitly NOT the audience | |
+| **E — The offer** | | |
+| E1 | What exactly is being offered | |
+| E2 | Why would they act now | Urgency + reason to believe |
+| E3 | What is genuinely different vs category-standard | Pairs with C5 |
+| E4 | Is the offer fixed, or can it change if the Brief says it should | Names the real authority |
+| **F — Proposition & message** | | |
+| F1 | The single-minded proposition | |
+| F2 | Claims we can make, and the evidence for each | |
+| F3 | Claims we must not make | Compliance / legal floor |
+| **G — Constraints** | | |
+| G1 | Budget — LOCKED at this stage | Force a not-to-exceed number |
+| G2 | Timeline + any immovable dates | |
+| G3 | Mandatories | |
+| G4 | Who does what, and how much operator time is actually available | |
+| G5 | Tech setup — where things publish | May be TBD until Phase 3 |
+| **H — Risk** | | |
+| H1 | **Pre-mortem: it is the deadline and this flopped. What happened?** | Surfaces risks no other framing gets |
+| H2 | What would make us kill or pivot mid-flight | |
+| H3 | Dependencies on other people or teams | |
+
+Then the **dependency pass** as before: surface the tensions (budget vs effort, timeline vs KPI,
+tech setup vs asset list, KPI vs baseline) and resolve them before drafting.
+
+### KPI baseline check (A3/A4)
+
+A KPI with a number and a deadline is not enough if the number came from nowhere. **Every KPI
+records the baseline it was derived from**, and CM flags a target that implies an unexplained
+multiple of it. This is not theoretical: the Soundtrak brand bank's "45,000+ / 16,500+" are
+*inherited* audience numbers, not owned reach — the real owned figures are roughly 50 Substack
+subscribers and 3,000 LinkedIn followers. A content-campaign KPI set against the inherited numbers
+would have been unreachable by an order of magnitude, and nothing in the old Brief would have
+caught it. If no baseline exists, say so explicitly — "first time in this channel, no baseline" is
+a legitimate answer and a very different one from silence.
+
+### Homework — evidence the operator has to go and collect
+
+When a topic needs something the operator can't answer from memory, CM opens a homework item rather
+than accepting a guess. Each one records:
+
+- **What** is needed, in plain words, and **where to find it** (the specific export, dashboard,
+  file or person);
+- **Why it is load-bearing** — what downstream decision it changes;
+- **The default** — what we will assume if it never arrives, so a decline never blocks; and
+- **The classification** (operator ruling 2026-09-06):
+  - **load-bearing** → **blocks Brief approval.** Being wrong here would invalidate the work. Say so
+    plainly and park the campaign in that state.
+  - **useful** → **proceeds under the stated assumption**, which is visible on the Brief and in the
+    ledger, so the operator can see what the campaign is resting on.
+
+Homework appears on the campaign dashboard as a real To Do, not a note buried in the Brief. CM
+applies the orchestrates-not-delegates contract first: if AI can close the gap (research, a reachable
+public source, an existing export), it does that instead of setting the operator homework.
+
+### The interview transcript
+
+The Brief is a 1–2 page distillation; an exhaustive interview produces far more than fits, and that
+surplus is exactly the raw material the Creative Director and Producer need. CM writes the full Q&A
+to **`campaigns/<slug>/research/intake-notes.md`** and links it from the Brief. The Brief stays
+short; nothing gets thrown away.
+
+### The coverage ledger
+
+A compact table in the Brief's **Approval record**, collapsed, one row per topic id:
+
+```markdown
+<details markdown="1">
+<summary><strong>Interview coverage</strong> — 34 topics · 28 answered · 3 assumed · 2 homework · 1 n/a</summary>
+
+| Topic | Status | Note |
+|---|---|---|
+| A3 Baseline | answered | 4.1% avg engagement across 6 LinkedIn posts (link) |
+| B2 Prior results | homework · load-bearing | LinkedIn export, operator, by Fri. Default if absent: use the-signal-amp figures |
+| D4 Untested beliefs | assumed | "They read on mobile" — no data; flagged for the CD |
+| G5 Tech setup | n/a | Resolved at Phase 3 per Rollout Architecture §4.1 |
+</details>
+```
+
+`brief_lint.py` checks it: a Brief that carries a ledger must also carry **What we already know**,
+and no ledger row may be left without a status. A ledger with blanks is worse than none — it looks
+like coverage while proving nothing.
+
+- **Attribution stays live**: every confirmed field gets tagged `[the operator's read]`, `[AI extension]`
+  or `[AI synthesis]` at capture, not retroactively.
+- **v2 sections (tech setup / roles / cadence)** may still be a grouped pass at the end of Phase 1 or
+  during Phase 3, pre-filled from tenant context where present.
 
 ---
 

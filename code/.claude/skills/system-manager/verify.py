@@ -41,6 +41,12 @@ SKILLS = ROOT / ".claude" / "skills"
 # The framework went live on this date. Tickets closed BEFORE it are not expected to carry a
 # `verified:` field — auditing 140 historical closures would be noise that trains the operator
 # to ignore the report, which is the failure mode this whole area keeps producing.
+#
+# Deliberately left at 2026-08-22 even though the framework actually landed 2026-09-06: a sandbox
+# clock was frozen ~2 weeks behind, so several tickets closed in that window carry 2026-08-22
+# stamps. Moving the cutoff forward to the true date would silently EXCUSE those from the audit —
+# including two that are genuinely missing their `verified:`. An over-inclusive cutoff only costs
+# a few extra rows to check; an under-inclusive one hides the finding.
 ADOPTED = "2026-08-22"
 
 for _s in (sys.stdout, sys.stderr):
@@ -156,7 +162,7 @@ def level3() -> int:
 
 def _closed_on(item: dict) -> str:
     """When the ticket was CLOSED — which is not `date:` (that is when it was RAISED). Every
-    resolution in this backlog opens with its own date ("2026-08-22 — RESOLVED. ..."), so read
+    resolution in this backlog opens with its own date ("2026-09-06 — RESOLVED. ..."), so read
     that rather than adding a field the schema doesn't need. Falls back to `date:`."""
     import re
 

@@ -26,6 +26,8 @@ _bg = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_bg)
 
 ships = _bg._plan_ships_count
+declares_no_file = _bg.declares_no_file
+names_a_missing_file = _bg.names_a_missing_file
 nid = _bg._normalize_asset_id
 stale = _bg._copy_stale_vs_render
 rev_stale = _bg._render_stale_vs_source   # SYS-109 reverse direction
@@ -114,6 +116,30 @@ EXEMPT_SUFFIX_CASES = [
 ]
 
 
+# SYS-152 — `copy_file: none` is the DOCUMENTED way to say an asset has no separate edit-copy.
+# The resolver honoured the sentinel; the --check path did not, so such an asset resolved fine at
+# build time and then FAILED the check with "missing file none". The only workaround was deleting
+# the field, which is undocumented and throws the declaration away. Two code paths read one
+# contract and disagreed; one shared helper now serves both. (Repro: acme-elc-resources-2026
+# asset 01-build-standard, 2026-08-28.)
+# (value, expected declares_no_file)
+SENTINEL_CASES = [
+    ("none", True), ("None", True), ("NONE", True), ("  none  ", True),
+    ("-", True), ("\u2014", True), ("n/a", True), ("na", True),
+    ("copy.md", False), ("", False), ("   ", False), (True, False), (None, False),
+]
+
+# (value, expected names_a_missing_file) — evaluated against a temp dir holding only "real.md".
+MISSING_FILE_CASES = [
+    ("ghost.md", True),      # the only case worth flagging
+    ("real.md", False),      # present on disk
+    ("none", False),         # explicit no-file declaration, NOT a missing file
+    ("\u2014", False),
+    (True, False),           # per-file `copy_file: true` is a boolean flag, not a path
+    ("", False), (None, False),
+]
+
+
 def _run() -> int:
     fails = []
     for val, exp in SHIPS_CASES:
@@ -136,8 +162,21 @@ def _run() -> int:
         got = suffix in _bg._COPY_SYNC_EXEMPT_SUFFIXES
         if got != exp:
             fails.append(f"  {suffix!r} in _COPY_SYNC_EXEMPT_SUFFIXES = {got!r}, expected {exp!r}")
+    for val, exp in SENTINEL_CASES:
+        got = declares_no_file(val)
+        if got != exp:
+            fails.append(f"  declares_no_file({val!r}) = {got!r}, expected {exp!r}")
+    import tempfile
+    with tempfile.TemporaryDirectory() as _td:
+        _d = Path(_td)
+        (_d / "real.md").write_text("x", encoding="utf-8")
+        for val, exp in MISSING_FILE_CASES:
+            got = names_a_missing_file(val, _d)
+            if got != exp:
+                fails.append(f"  names_a_missing_file({val!r}) = {got!r}, expected {exp!r}")
     total = (len(SHIPS_CASES) + len(NID_CASES) + len(STALE_CASES)
-             + len(REV_STALE_CASES) + len(EXEMPT_SUFFIX_CASES))
+             + len(REV_STALE_CASES) + len(EXEMPT_SUFFIX_CASES)
+             + len(SENTINEL_CASES) + len(MISSING_FILE_CASES))
     if fails:
         print(f"FAIL — {len(fails)}/{total} build-gallery parser cases failed:")
         print("\n".join(fails))

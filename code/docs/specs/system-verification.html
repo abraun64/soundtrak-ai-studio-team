@@ -1950,7 +1950,7 @@ body.template-index a.camp-card__tenant:hover { text-decoration: underline; }
   <main class="page-main">
     <article class="content">
       <h1 id="verifying-a-system-change-what-done-actually-means-sys-138">Verifying a system change — what "done" actually means (SYS-138)</h1>
-<p><strong>Status:</strong> <strong>AGREED AND LIVE — 2026-08-22.</strong> Part 1 (this definition) was signed off by the
+<p><strong>Status:</strong> <strong>AGREED AND LIVE — 2026-09-06.</strong> Part 1 (this definition) was signed off by the
 operator; Part 2 (the runner, the <code>verified:</code> field and the close rule) shipped the same day.
 The three decisions are recorded at the bottom.</p>
 <hr>
@@ -1960,7 +1960,7 @@ The three decisions are recorded at the bottom.</p>
 <li><strong>2026-08-08 — the onboarding build.</strong> Its "UAT" checked that the expected files existed.
   They did. It had to be upgraded to actually <em>running</em> the seed build, the doctor and the
   surface renders before anyone knew whether the thing worked.</li>
-<li><strong>2026-08-22 — the freshness gate.</strong> <code>surface_freshness.py --check</code> printed <em>"every surface
+<li><strong>2026-09-06 — the freshness gate.</strong> <code>surface_freshness.py --check</code> printed <em>"every surface
   is at least as new as its data"</em> while seven rendered surfaces sat up to four days behind
   their markdown. The check ran. It passed. It proved nothing, because it was never pointed at
   the surfaces that had gone stale.</li>
@@ -2163,7 +2163,7 @@ unit-testing a prose edit is waste, and this framework should never be used to j
 4. <strong>Verify it fails without the fix</strong>: revert the fix, run, observe the failure, restore.
 5. <strong>Wire it into the smoke test (Layer 1)</strong> so it runs forever after without anyone remembering.</p>
 <hr>
-<h2 id="worked-example-2026-08-22-the-tickets-that-produced-this-doc">Worked example — 2026-08-22, the tickets that produced this doc</h2>
+<h2 id="worked-example-2026-09-06-the-tickets-that-produced-this-doc">Worked example — 2026-09-06, the tickets that produced this doc</h2>
 <table>
 <thead>
 <tr>
@@ -2201,7 +2201,7 @@ unit-testing a prose edit is waste, and this framework should never be used to j
 </tbody>
 </table>
 <hr>
-<h2 id="part-2-what-shipped-2026-08-22">Part 2 — what shipped (2026-08-22)</h2>
+<h2 id="part-2-what-shipped-2026-09-06">Part 2 — what shipped (2026-09-06)</h2>
 <ul>
 <li><strong><code>verify.py</code></strong> — the level runner, in the System Manager skill.
   <code>--criteria</code> prints the table above plus the L2 checklist · <code>--level 0 &lt;files&gt;</code> sanity ·
@@ -2215,7 +2215,7 @@ unit-testing a prose edit is waste, and this framework should never be used to j
 <li><strong>The nudge</strong> — the weekly digest runs <code>--audit</code> as a diagnostic. It reports; it never
   escalates to a ticket (a P1 about unverified tickets would be circular, and board noise).</li>
 </ul>
-<h2 id="the-three-decisions-operator-2026-08-22">The three decisions (operator, 2026-08-22)</h2>
+<h2 id="the-three-decisions-operator-2026-09-06">The three decisions (operator, 2026-09-06)</h2>
 <ol>
 <li><strong>Record the level on the ticket — yes.</strong> A <code>verified:</code> field on the backlog item, rendered
    on the dashboard card. <em>Why:</em> the board is where the operator decides; a commit message is

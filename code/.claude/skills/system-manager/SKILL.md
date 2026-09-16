@@ -169,7 +169,7 @@ Full definition: `docs/specs/system-verification.md`.
    test naming the live failure it guards + its date) and get wired into the smoke test's
    Layer 1 — so they run forever after without anyone remembering.
 
-**The close rule (agreed 2026-08-22).** A ticket may not move to `done` with an empty
+**The close rule (agreed 2026-09-06).** A ticket may not move to `done` with an empty
 `verified:`. It MAY record a level lower than the table asks, with the reason stated in the
 same field — a hard must-pass gate is what produced the 2026-08-08 file-existence "UAT", so
 the requirement is an auditable CLAIM, not a mandatory ritual. `verify.py --audit` lists

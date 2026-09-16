@@ -111,7 +111,7 @@ def test_enumeration() -> None:
 def test_agrees_with_stale_sweep() -> None:
     """The two staleness sensors must agree BY CONSTRUCTION. stale-sweep's discriminator is the
     render-html chrome signature plus a same-stem .md; if this module stops sharing it, the two
-    drift apart again and stale-sweep starts auto-filing ideas the gate calls fine (2026-08-22:
+    drift apart again and stale-sweep starts auto-filing ideas the gate calls fine (2026-09-06:
     stale-sweep flagged 7, the gate exited 0)."""
     sweep = Path(__file__).resolve().parents[1] / "skills" / "cadences" / "stale-sweep.py"
     if not sweep.exists():
@@ -127,7 +127,7 @@ def test_heal_converges_through_a_cascade() -> None:
     """Rebuilds CASCADE: healing an asset record bumps its mtime, which makes the gallery that
     aggregates it stale in turn. A single-pass heal ends by reporting that cascade as
     "STILL STALE after rebuild" — a loud failure for a surface that is merely one rebuild
-    behind (observed live 2026-08-22: 8 healed, gallery.html falsely reported unfixable)."""
+    behind (observed live 2026-09-06: 8 healed, gallery.html falsely reported unfixable)."""
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         cd = _build(root)

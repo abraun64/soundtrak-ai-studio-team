@@ -149,6 +149,38 @@ if _DP_TEST.exists():
 # The ORGANISATION guide carries style.css INLINE (it is the page sent to a prospective customer,
 # before they have a repo, where a linked stylesheet would arrive unstyled). That is a duplicate,
 # and a duplicate nobody checks is drift waiting to happen - so check it.
+# A remediation line an operator cannot TYPE is worse than none: it sends them hunting for a
+# fault in their own keyboard. Windows PowerShell 5.1 rejects `&&`, and we shipped it in six
+# printed strings including the install doctor's own — hit three times in one UAT (2026-09-16).
+_CMD_GUARD = ROOT / ".claude" / "lib" / "test_operator_commands.py"
+if _CMD_GUARD.exists():
+    ok, err = _run_ok([str(_CMD_GUARD)])
+    check("L1", "printed operator commands run on PowerShell", ok, err if not ok else "")
+
+# Published surfaces are the ONLY view non-Studio colleagues get, and they cannot run any check
+# themselves. Two properties pull against each other: every page must say how current it is, and
+# unchanged pages must still be skipped. Regress either and the other silently breaks.
+# auto_publish() runs inside the Stop hook on EVERY session end. It must be provably inert on
+# every machine that is not the nominated publisher, and loud on the one that is — a silent
+# publish failure strands an audience that cannot check anything themselves.
+# Who gets offered an update. The case that was wrong is the one everybody starts in: a clone
+# that is not on a release tag was told it was up to date, permanently, so the FIRST upgrade at
+# any organisation could never be offered — hidden behind the answer people expect.
+_SU_TEST = ROOT / ".claude" / "lib" / "test_system_update.py"
+if _SU_TEST.exists():
+    ok, err = _run_ok([str(_SU_TEST)])
+    check("L1", "update offers reach an unpinned clone", ok, err if not ok else "")
+
+_AUTOPUB_TEST = ROOT / ".claude" / "lib" / "test_auto_publish.py"
+if _AUTOPUB_TEST.exists():
+    ok, err = _run_ok([str(_AUTOPUB_TEST)])
+    check("L1", "auto-publish gates (inert unless publisher)", ok, err if not ok else "")
+
+_PUB_TEST = ROOT / ".claude" / "lib" / "test_publish_surfaces.py"
+if _PUB_TEST.exists():
+    ok, err = _run_ok([str(_PUB_TEST)])
+    check("L1", "published surfaces carry freshness + skip unchanged", ok, err if not ok else "")
+
 _CSS_SYNC = ROOT / ".claude" / "lib" / "inline_guide_css.py"
 if _CSS_SYNC.exists():
     ok, err = _run_ok([str(_CSS_SYNC), "--check"])
@@ -184,6 +216,32 @@ _V_TEST = ROOT / ".claude" / "skills" / "system-manager" / "test_verify.py"
 if _V_TEST.exists():
     ok, err = _run_ok([str(_V_TEST)])
     check("L1", "verification runner tests", ok, err if not ok else "")
+
+# The Brief structure gate. Its v4 checks are what make the exhaustive intake falsifiable: a
+# coverage ledger with a blank row reads as thorough while proving nothing, which is worse than
+# no ledger at all. Regress that and "we covered everything" becomes unverifiable again.
+_BL_TEST = ROOT / ".claude" / "skills" / "brief-lint" / "test_brief_lint.py"
+if _BL_TEST.exists():
+    ok, err = _run_ok([str(_BL_TEST)])
+    check("L1", "brief-lint structure tests", ok, err if not ok else "")
+
+# SYS-154 — the deterministic half of the anti-slop gate. Its thresholds are calibrated to
+# SEPARATE a known-bad body of text from a known-good one; regress that separation and the gate
+# either fires on good prose (and gets ignored) or stops seeing machine texture entirely, which
+# is the state that let a library ship reading "very AI" past two green gates.
+_SLOP_TEST = ROOT / ".claude" / "skills" / "content-subedit" / "test_slop_lint.py"
+if _SLOP_TEST.exists():
+    ok, err = _run_ok([str(_SLOP_TEST)])
+    check("L1", "slop-lint texture tests", ok, err if not ok else "")
+
+# SYS-149 — the leak gate is the last check before master-derived content reaches a PUBLIC repo.
+# It has to stay correct in BOTH directions: no false alarm on a clean split tree (one that cries
+# wolf gets waved through, and that is how a real leak eventually ships), and no loosening that
+# lets a genuine operator-name leak past.
+_BSEED_TEST = ROOT / ".claude" / "lib" / "test_build_seed.py"
+if _BSEED_TEST.exists():
+    ok, err = _run_ok([str(_BSEED_TEST)])
+    check("L1", "build-seed leak-gate tests", ok, err if not ok else "")
 
 
 # ── Layer 1b — Auto-rebuild machinery (SYS-126/127): a seed must FAIL LOUD and must actually

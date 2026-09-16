@@ -5,6 +5,15 @@ NON-CANONICAL top-level headings (that should fold into "Anything else" or be re
 sections that are OUT OF ORDER. Run before surfacing a Brief — mandatory, alongside the
 review-ready gate.
 
+v4 (2026-09-06) additionally checks the EXHAUSTIVE-INTAKE contract, on briefs that claim it. A
+v4 brief is SELF-IDENTIFYING: it carries an interview coverage ledger. That avoids grandfathering
+by date (fragile) — a brief either claims the higher bar or it doesn't, and the ones that claim it
+are held to it:
+  - it must also carry "What we already know" (the evidence base the ledger reports coverage of);
+  - no ledger row may be left without a status.
+A ledger with blank rows is WORSE than no ledger: it reads as coverage while proving nothing, which
+is the one failure this whole mechanism exists to prevent.
+
 Usage:
   python brief_lint.py <brief.md> [<brief.md> ...] [--quiet]   # exit 1 if any issue
 """
@@ -23,6 +32,9 @@ except Exception:
 # OPTIONAL sections don't trigger a "missing" error (they legitimately don't always appear).
 CANONICAL = [
     ("Why this campaign",           ["why this campaign"],                         False),
+    # v4 evidence base. OPTIONAL in the order check so briefs written before the exhaustive
+    # intake don't all flag; REQUIRED for any brief that carries a coverage ledger (below).
+    ("What we already know",        ["what we already know", "evidence base"],     True),
     ("Business objective",          ["business objective", "objective"],           False),
     ("The offer",                   ["the offer", "offer"],                        False),
     ("Audience",                    ["audience"],                                  False),
@@ -56,8 +68,30 @@ def _map(heading: str):
     return None
 
 
+# The ledger's summary line and its rows. A row is "| <topic> | <status> | <note> |"; the status
+# cell is the one that must never be empty.
+_LEDGER_MARK = re.compile(r"interview coverage", re.I)
+_ROW = re.compile(r"^\|\s*([A-H]\d[^|]*)\|([^|]*)\|", re.M)
+
+
+def _ledger_issues(text: str, seen: list) -> list[str]:
+    """The v4 exhaustive-intake checks. No-op unless the brief carries a coverage ledger."""
+    if not _LEDGER_MARK.search(text):
+        return []
+    issues = []
+    if "What we already know" not in seen:
+        issues.append("carries an interview coverage ledger but is MISSING 'What we already know' "
+                      "— the evidence base the ledger reports coverage of (docs/specs/brief.md v4)")
+    blank = [m.group(1).strip() for m in _ROW.finditer(text) if not m.group(2).strip()]
+    if blank:
+        issues.append("coverage ledger rows with NO status (a blank row reads as coverage while "
+                      "proving nothing): " + ", ".join(blank[:6]))
+    return issues
+
+
 def lint(path: Path) -> list[str]:
-    heads = re.findall(r"^##\s+(.+)$", path.read_text(encoding="utf-8", errors="replace"), re.M)
+    text = path.read_text(encoding="utf-8", errors="replace")
+    heads = re.findall(r"^##\s+(.+)$", text, re.M)
     seen, order = [], []
     issues = []
     idx = {name: i for i, (name, _, _) in enumerate(CANONICAL)}
@@ -73,6 +107,7 @@ def lint(path: Path) -> list[str]:
             issues.append(f"MISSING mandatory section: '{name}'")
     if order != sorted(order):
         issues.append("sections OUT OF ORDER vs the locked canonical sequence")
+    issues += _ledger_issues(text, seen)
     return issues
 
 

@@ -66,12 +66,12 @@ def test_close_date_comes_from_the_resolution() -> None:
     after it, and an audit keyed on `date:` missed both."""
     old_raise_new_close = ('  - id: SYS-136\n    title: "Raised long ago"\n    status: done\n'
                            '    date: 2026-08-03\n'
-                           '    resolution: "2026-08-22 — RESOLVED. Fixed."\n')
+                           '    resolution: "2026-09-06 — RESOLVED. Fixed."\n')
     check("a ticket raised before the framework but closed after it is audited",
           _audit_with(old_raise_new_close) == 1)
     check("the close date is read from the resolution",
           _vf._closed_on({"date": "2026-08-03",
-                          "resolution": "2026-08-22 — RESOLVED. Fixed."}) == "2026-08-22")
+                          "resolution": "2026-09-06 — RESOLVED. Fixed."}) == "2026-09-06")
     check("it falls back to `date:` when there is no resolution",
           _vf._closed_on({"date": "2026-08-03"}) == "2026-08-03")
 

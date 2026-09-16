@@ -68,7 +68,7 @@ One copy of the load-bearing safety logic, factored out of `weekly-digest.py`:
   findings. They then release together when it closes.
   *Why:* title-dedupe broke three ways at once — counts in the title refiled on every change,
   triage's mandated title-sharpening broke the match on every promote, and a kill deleted the
-  only record there was to match. Observed live 2026-08-22: a promoted finding and a finding
+  only record there was to match. Observed live 2026-09-06: a promoted finding and a finding
   killed on 2026-08-06 both refiled within one session.
 - **`add_tombstone()` / `tombstone.py`** — records a KILLED finding in
   `system/cadence-tombstones.yaml` so it stays killed. The triage job runs it on every kill of

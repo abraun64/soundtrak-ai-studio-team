@@ -307,7 +307,23 @@ def check_campaign_yaml_drift(campaign_dir: Path, asset_folders: list[Path]) -> 
     text = yaml_path.read_text(encoding="utf-8")
     issues = []
     n_disk = len(asset_folders)
-    for m in re.finditer(r'title:\s*"[^"]*?(\d+)\s+assets', text):
+    # SYS-142: scan PHASE titles only, as the docstring says. Scanning the raw yaml text swept up
+    # every other `title:` in the file — and operator_action titles are HISTORICAL RECORDS of an
+    # approval ("Approve the Plan v1 (21 assets, Tier L)", "Approve Wave 2 … (4 assets)"). The
+    # plan really was 21 assets when it was approved; more assets existing now is not drift, it is
+    # the campaign progressing. Two of the three count flags in the 2026-09-08 drift backlog were
+    # this false positive, and a gate that cries wolf gets ignored exactly like a silent one.
+    try:
+        import yaml as _y
+        phase_titles = [str((ph or {}).get("title") or "")
+                        for ph in ((_y.safe_load(text) or {}).get("phases") or [])
+                        if isinstance(ph, dict)]
+    except Exception:  # noqa: BLE001 — a malformed yaml is another check's problem
+        phase_titles = []
+    for pt in phase_titles:
+        m = re.search(r"(\d+)\s+assets", pt)
+        if not m:
+            continue
         claimed = int(m.group(1))
         if claimed != n_disk:
             # Plan roster may legitimately exceed disk (queued assets not yet

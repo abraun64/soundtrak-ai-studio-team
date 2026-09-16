@@ -25,6 +25,48 @@ NOT ship it. Return the violation list + the least-bad version and flag the bloc
 
 ---
 
+## The deterministic pass — `slop_lint.py` (SYS-154, MANDATORY)
+
+Run this BEFORE reporting clean, and quote its numbers in the report. A sub-edit report without
+the linter output attached is not a clean sub-edit.
+
+```bash
+python .claude/skills/content-subedit/slop_lint.py <files or dir> --tenant <tenant>
+```
+
+**Why a script and not a closer read.** On 2026-08-28 an operator read a shipped library and said
+it "sounds very AI". This gate had run as a labelled pass and reported clean; the Brand Manager
+had scored tone 5/5 across twelve assets. Both were wrong, and neither was careless:
+
+- The seven rules below are strong on **enumerable** things — banned words, em-dashes, named
+  patterns. The fault was not a word. It was a **statistical property of a body of text**: one
+  rhetorical construction 95 times, sentence length that never varied, abstractions where
+  instructions belonged. A checklist cannot see that.
+- Nor can a reader working **one asset at a time**. "Rather than" five times in one paragraph is
+  invisible while you read that paragraph and obvious when you count across fifteen files. **So
+  pass the whole set when there is one** — corpus mode is the point, not a convenience.
+- And an LLM grading LLM prose is close to blind here: the reviewer's own generative distribution
+  is the thing being detected. No prompt fixes that. It needs a check that counts.
+
+**What it counts**: repetition of a named construction (rate per 1000 words, plus a hard flag on
+clustering — several inside a handful of consecutive sentences, which reads far worse than the
+raw rate) · sentence-length variance · aphorism density ("X is the win / the whole thing") ·
+sentences opening on an abstraction or a gerund instead of a person or a named thing · repeated
+sentence openers.
+
+**When it flags, fix the text — do not raise the threshold.** The thresholds are calibrated to
+separate a known-bad body from a known-good one, so moving them to get green destroys the only
+property that makes the gate worth running. If a flagged rhythm is a genuine brand device, exempt
+it deliberately in `tenant-brand/<tenant>-slop.yaml`:
+
+```yaml
+thresholds:
+  phrase_rate_per_1k: 2.5      # a punchy consumer voice legitimately repeats more
+exempt_phrases:
+  - "rather than"              # named device, deliberate
+```
+
+
 ## Step 1 — Load the rules
 
 Read **both**, in this order, before checking any content:

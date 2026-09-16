@@ -2,7 +2,7 @@
 
 **The system's own dashboard.** Everything in the system lives in one of the document classes below. If you're cold-starting and don't know where something is, start here.
 
-**Last updated**: 2026-08-22
+**Last updated**: 2026-09-16
 **Version**: v3
 
 > **Kept fresh by `nav-audit`** (`.claude/skills/nav-audit/nav_audit.py`) — diffs this index against the specs/skills/agents/playbooks on disk and flags anything missing, any dead link, a stale stamp, and the oldest-untouched docs. It runs as part of `system-smoke-test` (so any "run smoke test" catches index drift) and on demand ("run nav audit"). When you add a spec/skill/agent/playbook, add a row here — the audit will catch it if you forget.
@@ -32,7 +32,7 @@ Each section answers: *what kind of thing is this, when do you read it, and wher
 | Spec | What it governs | Where |
 |---|---|---|
 | **Rollout Architecture v2** | The 6-phase campaign lifecycle backbone. Why the phases exist and what each produces. | `docs/specs/rollout-architecture.md` |
-| **Brief spec v2** | Campaign brief schema + grill-me interview discipline. | `docs/specs/brief.md` |
+| **Brief spec v4** | Campaign brief schema + the EXHAUSTIVE grill-me interview: no time target, a coverage bar over a named topic bank, an evidence sweep before the first question, KPI-baseline check, homework for evidence the operator must collect, and the coverage ledger the lint enforces. | `docs/specs/brief.md` |
 | **Concept spec** | Creative trio (Safe/Smart/Wild) schema + CD outputs required. | `docs/specs/concept.md` |
 | **Plan spec v2** | Asset list schema (incl. Review format + Copy file columns) + §N Phase readiness gate. | `docs/specs/plan.md` |
 | **Per-Step Brief spec** | CM → Producer dispatch envelope. What every brief must contain. | `docs/specs/per-step-brief.md` |
@@ -110,10 +110,13 @@ Each section answers: *what kind of thing is this, when do you read it, and wher
 | **cost-ledger** | Per-dispatch AI cost ledger; dashboard AI-cost totals render from it (COST_TOTAL_AUTO). | Called by CM on each subagent return | `.claude/skills/cost-ledger/` |
 | **agent-io** | Validates the agent I/O contract (SYS-004) — the structured `return:` envelope that rides alongside each agent's prose. CM runs `validate_envelope.py` on every return (dispatch_id pairing · status · per-agent required fields · ship-file existence) + appends the pair to the dispatch ledger. Additive / non-breaking. | Called by CM on each subagent return; "validate the envelope" | `.claude/skills/agent-io/` |
 | **content-subedit** | Sub-edits LinkedIn posts / Substack articles against the Soundtrak voice rules. | "sub-edit this", "check against the voice rules" | `.claude/skills/content-subedit/` |
+| **slop-lint** | Deterministic AI-texture check for ANY document or document set — counts repeated constructions, sentence-length uniformity, aphorism density, abstraction-as-actor and repeated openers. Front door to the one script, which lives in content-subedit. | `.claude/skills/slop-lint/SKILL.md` |
 | **deploy-mailchimp** | Pushes email assets to Mailchimp via API. | Called by CM at Phase 6 | `.claude/skills/deploy-mailchimp/` |
 | **deploy-cookbook** | Universal cookbook-based deployment fallback. | Called by CM at Phase 6 | `.claude/skills/deploy-cookbook/` |
 | **deploy-static-folder** | Static-folder deploy adapter — reference implementation of the deploy-adapter contract (copies an HTML deployment package to a local web-root + verifies). | Called by CM at Phase 5/6 (`platform: static-folder`) | `.claude/skills/deploy-static-folder/` |
 | **integration-scaffolder** | Stamps a new deploy-adapter skeleton conforming to the adapter contract (interface + tested `adapter.py` + investigation-reference + smoke test). | Operator, to add a new coded deploy adapter (SYS-066) | `.claude/skills/integration-scaffolder/` |
+| **insights-library-add** | Adds a research source (market data, behavioural science, government/consultancy report) to the shared Insights Library at `tenant/research-library/`, with the faceted schema the insight scan reads. Public research only — the library is shared across tenants. | "add this to my Insights Library", "lodge this paper" | `.claude/skills/insights-library-add/` |
+| **join-studio** | Sets a machine up to work in a team Studio without the operator ever opening a terminal: prerequisites check, both clones, provisioning, health check read back in plain English. Explicitly forbids the double-clickable setup script. | "set up my studio", "join the studio", "my studio is broken" | `.claude/skills/join-studio/` |
 | **system-smoke-test** | Health check: render pipeline + operator-quartet (all campaigns) + hooks + git + nav-index. Returns red/amber/green. | "run system smoke test", "check system health" | `.claude/skills/system-smoke-test/` |
 | **system-drift-watcher** | Cross-campaign drift scan (stale dashboards · zombie To-Do rows · in-flight Producers · stale cross-refs). | "check system drift", "anything stale?" | `.claude/skills/system-drift-watcher/` |
 | **cm-audit** | Surface-currency audit — every operator surface (dashboard/gallery/tasks/index/tenant-home) re-rendered after its data source changed. | "run cm audit", "are the surfaces current?" | `.claude/skills/cm-audit/` |

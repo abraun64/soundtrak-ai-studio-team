@@ -171,7 +171,7 @@ def file_new_ideas(new_titles: list[str], raised_by: str, today: str,
       - triage MANDATES sharpening the title on promote, so every promoted finding refiled
         on the next run — the two rules were in direct conflict;
       - a kill deletes the record outright, so a killed finding had nothing to match at all.
-    Observed live 2026-08-22: IDEA-063 (promoted to SYS-143) and a finding killed on
+    Observed live 2026-09-06: IDEA-063 (promoted to SYS-143) and a finding killed on
     2026-08-06 both refiled within one session.
 
     Counts belong in the SUMMARY. Never put them in the fingerprint.

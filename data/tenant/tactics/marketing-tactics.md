@@ -399,7 +399,7 @@ The tables below are a menu of tactic *types*. These **named plays** are the hig
 - **Creative Director — Phase 2 (Concept Design)**: draws from this menu when shaping each concept's channel mix and tactical mechanic; grounds §4b tactical precedents in named tactics. Tactics that don't earn their place don't go in a concept.
 - **Campaign Manager — Phase 3 (Plan)**: composes the Plan's asset list from the selected concept's tactics — every chosen tactic becomes one or more asset rows (with review shape, copy file, owner, dependencies).
 - **Campaign Manager — Phase 4a (Per-Step Brief)**: slices the relevant tactic definition(s) into Producer's brief. Producer does not load this file directly.
-- **Operator**: browsable HTML reference (`marketing-tactics.html`, mirrored at repo root as `marketing_tactics.html`) for planning conversations.
+- **Operator**: browsable HTML reference (`marketing-tactics.html`, beside this file) for planning conversations.
 
 ## How this library is maintained
 

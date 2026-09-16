@@ -49,7 +49,7 @@ class _System:
         self._td.cleanup()
 
     def file(self, title: str, fingerprint: str = FP) -> list:
-        return cc.file_new_ideas([title], raised_by="stale-sweep", today="2026-08-22",
+        return cc.file_new_ideas([title], raised_by="stale-sweep", today="2026-09-06",
                                  summary="n/a", source="cadence (stale-sweep)",
                                  fingerprint=fingerprint)
 
@@ -57,7 +57,7 @@ class _System:
 def test_count_drift_does_not_refile() -> None:
     """Counts live in the title, so "31 asset(s)..." and "32 asset(s)..." are different strings.
     Under title-dedupe the same standing finding refiled every time the number moved
-    (observed live 2026-08-22)."""
+    (observed live 2026-09-06)."""
     with _System() as s:
         first = s.file("31 asset(s) parked in 'For Human Review' over 10 days")
         again = s.file("32 asset(s) parked in 'For Human Review' over 10 days")
@@ -133,7 +133,7 @@ def test_titles_still_dedupe_without_a_fingerprint() -> None:
 
 def test_a_merged_ticket_owns_every_finding_it_absorbed() -> None:
     """A MERGE folds records into one surviving ticket, so that ticket ends up tracking several
-    findings at once (2026-08-22: SYS-146 absorbed IDEA-066's diagnosis and the killed SYS-145,
+    findings at once (2026-09-06: SYS-146 absorbed IDEA-066's diagnosis and the killed SYS-145,
     ending up with three). A single-value `fingerprint:` would keep one and silently release the
     rest to refile on the next run. It also has to RELEASE them together: once the owning ticket
     is done the problem is fixed, so every finding it absorbed becomes raisable again."""

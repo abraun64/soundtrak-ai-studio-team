@@ -73,7 +73,7 @@ _SENTINEL_RE = re.compile(
 # <slug>.html, brief.html, plan.html, phase-N-*.html, concepts/*.html, the per-asset record /
 # preview .html, and the tenant brand-context / playbook / phase-0 / segments docs — sat OUTSIDE
 # the gate, so it could fall days behind its markdown while `--check` reported every surface
-# fresh. Verified 2026-08-22: stale-sweep flagged 7 lagging surfaces (5 campaign-DNA docs ~4d
+# fresh. Verified 2026-09-06: stale-sweep flagged 7 lagging surfaces (5 campaign-DNA docs ~4d
 # behind, 2 asset records ~1d) while this module exited 0. Those are the surfaces review actually
 # happens on, so that hole is the whole guarantee.
 #

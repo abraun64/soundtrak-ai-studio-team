@@ -10,6 +10,128 @@ System Manager; see "Cutting a release" at the foot of this file.
 
 ## [Unreleased]
 
+## [1.10.0] — 2026-09-16
+
+> **This is the release that makes running the Studio across a team real.** 1.9.0 shipped the
+> groundwork inert and unproven; this one adds the deployment guide, the setup path, and the
+> fixes found by actually deploying it to a second machine. A single-operator install is
+> unaffected: everything here stays switched off unless the team shape is turned on.
+
+### Added
+- **A deployment guide for organisations, written for the three different people involved.**
+  Setting the organisation up, joining as one of the team, and establishing the brands are
+  genuinely different jobs, usually done by different people, and are now separate parts with
+  their own owners and their own timings — rather than one long list that only makes sense to
+  whoever did all three.
+- **Joining a team no longer requires a command line.** Once IT has deployed the apps, a new
+  person opens the Studio, types one ordinary sentence containing the two addresses they were
+  given, and setup runs itself — the clone, the connection, the prerequisites, the health check,
+  read back to them in plain language. There is deliberately **no downloadable setup script**:
+  an unsigned script that installs software and is passed around on a shared drive is
+  indistinguishable from the attack it imitates, and teaches staff to double-click executables
+  from SharePoint.
+- **A ready-made prerequisites file for IT**, listing the five applications with their standard
+  package identifiers, deployable through the tools an organisation already uses. It pins
+  machine-wide installation, because a per-user install lands in a folder managed devices block
+  from running — which presents later as an unrelated-looking security warning about an obscure
+  file, long after anyone would connect it to the install.
+- **Instructions for keeping everything current**, covering the four things that go stale on
+  four different rhythms: new versions, the Studio's own improvement backlog, your brands, and
+  your libraries — each with a named owner, because the failure mode is everyone assuming
+  someone else does it.
+- **You can now add a research source to the Insights Library by asking.** The library had
+  invited that for months and nothing implemented it.
+
+### Changed
+- **The dashboards colleagues read now publish themselves.** Where a nominated machine publishes
+  a read-only copy for people without the Studio, that copy refreshes at the end of every
+  session instead of when someone remembers. **Every published page also carries the date its
+  content was last updated**, so a reader can see how current it is — previously the only
+  freshness signal was a file nobody opens, which left an audience that cannot run any check of
+  their own looking at a plausible page with no way to tell.
+- **Setting up now installs what it needs**, rather than reporting what is missing and leaving
+  the operator to install it.
+
+### Fixed
+- **Commands the system told you to type could not be typed.** Six printed instructions used a
+  separator Windows PowerShell rejects — including the one printed by the setup check itself,
+  whose entire job is to give a working fix. A check now prevents it returning.
+- **Nobody would ever have been offered their first upgrade.** An organisation creates its copy
+  by uploading the downloaded Studio, and everyone works from that — a state the update check
+  treated as "already current". Every operator would have been told they were up to date,
+  permanently, while the upgrade mechanism appeared healthy.
+- **A team installation that had not finished setup was offered the single-person setup**, which
+  would have written campaign data into the read-only code copy, blocked every future upgrade,
+  and disguised its own cause. The two states are now told apart before anything acts on them.
+- **Messages pointed at documents you do not have.** Three warnings ended in a reference to a
+  section of an internal specification instead of saying what to do.
+- **Guide corrections found by deploying it**: the level of repository access each person needs
+  (and that nobody needs the administrator level people assume), when sign-in happens and what
+  the resulting error really means, which folder to work in afterwards, how to reach any part of
+  a long page, and the step that creates the SharePoint library rather than assuming it exists.
+
+
+## [1.9.0] — 2026-09-08
+
+> **Also in this release, and not yet ready to use:** the groundwork for running the Studio across
+> a team rather than one operator. It ships inert — the single-operator setup behaves exactly as
+> it did in 1.8.0, and nothing changes unless the team shape is explicitly turned on. It has not
+> been through its two-operator trial yet, so treat it as present-but-unproven and wait for the
+> release that documents it properly.
+
+### Added
+- **The copy gate can now catch writing that "sounds AI" — by counting, not by judging.** A new
+  check measures the things a checklist and a careful read both miss: the same sentence
+  construction used over and over, sentence lengths that never vary, abstractions standing in
+  where an instruction belongs. It reads a whole set of documents at once, because a phrase used
+  five times in one paragraph is invisible while you read that paragraph and obvious across
+  fifteen files. Thresholds and deliberate brand devices are set per client. The brand reviewer
+  can no longer give a tone score without quoting these numbers alongside it.
+- **A proportionate way to prove a change actually works.** System changes now pick a
+  verification depth to match their risk — does it load, does the system still run, does the
+  operator get the right outcome, is the logic covered by a test — and record what was run on the
+  ticket itself, so "done" is visibly different from "claimed done" on the board.
+
+### Changed
+- **The campaign brief interview now really interviews you.** The old 4–8 minute target is gone —
+  it was a time budget capping the depth of the document every later phase inherits. The intake
+  now gathers what the system already knows first (your previous campaigns in that channel and
+  what they actually returned, the research you already hold, the competitive picture) and opens
+  with that rather than a blank question. It covers a fixed set of topics and ends when they are
+  covered, not when a clock runs out; a target number has to be derived from a real baseline
+  rather than invented; and when something needs evidence you have to go and find, that becomes a
+  visible, named piece of homework instead of a guess.
+
+### Fixed
+- **Pages can no longer quietly fall behind their content.** The freshness guarantee only watched
+  five kinds of page, so briefs, plans, phase documents, individual asset records and the client
+  brand documents could sit days out of date while the check reported everything current — which
+  is exactly what had happened to seven pages. It now watches every page the system renders.
+- **A campaign dashboard could take minutes to build and be killed part-way**, leaving the old
+  page in place with no warning. One campaign shape sent the "what should I do next" calculation
+  into a loop; the same page now builds in about a second.
+- **The AI-cost column no longer comes up blank.** It used to fill in only if someone had typed a
+  particular hidden marker into the campaign file; now it always draws from the live cost record,
+  and a hand-typed figure — which freezes at whatever was typed and then looks correct — gets
+  flagged.
+- **The idea inbox stops re-raising things you already decided.** A finding you promoted or killed
+  came back on the next scheduled scan, because matching was done on wording that legitimately
+  changes. Decisions now stick.
+- **The weekly health digest no longer files duplicate tickets**, garbles its own text, or stays
+  silent when a problem it raised has fixed itself — it now tells you which open tickets are
+  passing again.
+- **Two checks that cried wolf, fixed.** The drift check flagged historical approval records as
+  though they were current errors, and the pre-release privacy scan reported the licence file's
+  own copyright line as a leak. Both now read what they were always meant to read — and fixing
+  the second uncovered a related fault that would have stripped the copyright holder's name out
+  of their own licence file.
+- **The gallery check accepts an asset that legitimately has no separate edit-copy** instead of
+  failing on the documented way of saying so.
+- **Public documentation corrected** where it had drifted from the product: an internal
+  contradiction about how many agents there are, and a walkthrough still quoting a timing the
+  brief interview no longer uses.
+
+
 ## [1.8.0] — 2026-07-29
 
 ### Added

@@ -38,10 +38,10 @@ Surface → data inputs:
 It resolves DATA to the **main checkout** via `repo_paths` (SYS-103), so it works from a
 worktree session too.
 
-### The enumeration IS the guarantee (SYS-143, 2026-08-22)
+### The enumeration IS the guarantee (SYS-143, 2026-09-06)
 
 The four rows above were hand-enumerated, so everything else was outside the gate — and
-"outside the gate" is indistinguishable from "fresh". On 2026-08-22 `--check` reported *every
+"outside the gate" is indistinguishable from "fresh". On 2026-09-06 `--check` reported *every
 surface fresh* while the `stale-sweep` cadence flagged **seven** rendered surfaces up to four
 days behind their markdown: five campaign-DNA docs and two asset records. Those are the
 surfaces review actually happens on.

@@ -591,7 +591,7 @@ def _current_phase_num(campaign_dir: "Path") -> "int | None":
 # interpreter's recursion limit tripped and the RecursionError was swallowed by an inner
 # `except Exception`. It didn't crash — it just took MINUTES and returned a value derived from a
 # blown stack. gamma-launch-2026q2's dashboard render never finished inside the Stop hook's 60s
-# budget (verified 2026-08-22: >120s by hand, 1.3s after this fix), so the hook's render was
+# budget (verified 2026-09-06: >120s by hand, 1.3s after this fix), so the hook's render was
 # killed and the surface silently kept serving its old content — exactly the silent-stale
 # failure the fail-loud guarantee exists to prevent.
 #
@@ -1193,6 +1193,69 @@ def derive_phase_human_time(phase_id, campaign_dir: Path):
 
 _PHASE_HT_BLANK = {"", "—", "-", "–", "tbd", "n/a", "na", "none"}
 
+# SYS-151 — a phase's AI cost read VERBATIM from campaign.yaml, so the live ledger derivation
+# only fired when an author had typed the literal marker "<!-- PHASE_COST:N -->" into that field.
+# Auto-costing was OPT-IN via a magic string: omit it and the cell rendered a dash, with no error
+# and no warning, even while the ledger held correctly phased entries for that exact phase. That
+# breaks the keystone that surfaces fail loud rather than silently, and the operator hit it
+# repeatedly ("why aren't costs being shown on the Dashboard table (we keep running into this!)").
+#
+# Human time already had the inverted default (_phase_human_time_cell, above): blank DERIVES.
+# Cost is now the same shape, so the two cells in one table behave the same way.
+#
+# The twin failure mode is worse than a blank: because ai_cost accepts free text, authors
+# hand-type figures instead — acme-workforce-report-2026 carried "~$1.33 - ~222k tok (CD trio,
+# metered 2026-06-18)", frozen at its June value and LOOKING correct. The campaign-manager skill
+# already forbids that ("never a typed number"); nothing enforced it. _phase_cost_warning() below
+# gives the renderer a way to say so out loud.
+_PHASE_COST_BLANK = _PHASE_HT_BLANK
+
+# A hand-typed money/token figure where a derived cell belongs — "$1.33", "222k tok", "~$0.60".
+_HANDTYPED_COST_RE = re.compile(r"\$\s*\d|\d\s*(?:k|m)?\s*tok", re.I)
+
+
+def _phase_cost_warning(ph: dict) -> str | None:
+    """The hand-typed-number case, named for a caller that wants to warn. None when the cell is
+    blank (derives), a marker (derives), or a deliberate silence."""
+    raw = str(ph.get("ai_cost") or "").strip()
+    if not raw or raw.lower() in _PHASE_COST_BLANK or "PHASE_COST" in raw:
+        return None
+    if _HANDTYPED_COST_RE.search(raw):
+        return (f"phase {ph.get('id')}: ai_cost is a hand-typed figure ({raw!r}) where the live "
+                "ledger cell belongs — it freezes at the value someone typed and then looks "
+                "correct. Remove it and the cell derives from the ledger.")
+    return None
+
+
+def ledger_phase_cost(campaign_name: str, phase_id) -> str:
+    """The live per-phase cell from the cost ledger. Its own function so the render path has a
+    seam a test can replace — the alternative is stubbing importlib, which tests the stub more
+    than the code. A missing or broken ledger must never break a render, so it answers '' and the
+    caller falls back to a dash."""
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "_ledger", Path(__file__).resolve().parents[1] / "cost-ledger" / "ledger.py")
+        _ledger = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_ledger)
+        return _ledger.phase_cost_cell(campaign_name, phase_id) or ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def _phase_ai_cost_cell(ph: dict, campaign_dir: Path) -> str:
+    """Resolve the AI Cost cell for one phase row. Mirrors _phase_human_time_cell exactly: a
+    hand-set value wins, a blank or a PHASE_COST marker DERIVES from the ledger. Opt-out, not
+    opt-in — an explicit `ai_cost: '-'` stays a deliberate silence only because '-' is not
+    blank-with-ledger-entries; when the ledger has nothing for the phase the derived cell is a
+    dash anyway, so the two agree."""
+    raw = str(ph.get("ai_cost") or "").strip()
+    wants_derive = raw.lower() in _PHASE_COST_BLANK or "PHASE_COST" in raw
+    if not wants_derive:
+        return raw
+    return ledger_phase_cost(campaign_dir.name, ph.get("id")) or "—"
+
+
 
 def _phase_human_time_cell(ph: dict, campaign_dir: Path) -> str:
     """Resolve the Human Time cell for one phase row. A hand-set value wins; a blank
@@ -1294,9 +1357,13 @@ def render_phases_table_md(phases: list[dict], campaign_dir: Path) -> str:
             archive.append((str(ph.get("id", "")), str(ph.get("title", "")), arch_cells))
         status = _derive_phase_status(ph, campaign_dir)
         human_time = _phase_human_time_cell(ph, campaign_dir)
+        ai_cost = _phase_ai_cost_cell(ph, campaign_dir)      # SYS-151 — derives when blank
+        _w = _phase_cost_warning(ph)
+        if _w:
+            print(f"[operator_actions] {campaign_dir.name}: {_w}", file=sys.stderr)
         lines.append(
             f"| {ph.get('id','')} | {ph.get('title','')} | {status} | "
-            f"{ph.get('window','—')} | {human_time} | {ph.get('ai_cost','—')} | {artifacts_md or '—'} |"
+            f"{ph.get('window','—')} | {human_time} | {ai_cost} | {artifacts_md or '—'} |"
         )
     lines.append("")
     lines.append(
